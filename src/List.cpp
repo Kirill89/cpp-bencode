@@ -1,23 +1,24 @@
-#include "../include/BencodeList.h"
-#include "../include/Utils.h"
+#include "../include/List.h"
 
-std::shared_ptr<BencodeElement> BencodeList::parse(std::vector<char> const &data, int &pos) {
-    BencodeListVector elements;
+using namespace Bencode;
 
-    if (data[pos] != 'l') throw BadBencodeException();
+std::shared_ptr<Element> List::parse(std::vector<char> const &data, int &pos) {
+    ListVector elements;
 
-    Utils::incrementPosOrThrow(data, pos);
+    if (data[pos] != 'l') throw MarkupException();
+
+    incrementPosOrThrow(data, pos);
 
     while (data[pos] != 'e') {
-        elements.push_back(BencodeElement::parse(data, pos));
+        elements.push_back(Element::parse(data, pos));
     }
 
     pos++;
 
-    return std::make_shared<BencodeList>(elements);
+    return std::make_shared<List>(elements);
 };
 
-std::string BencodeList::toReadable(int deepness) {
+std::string List::toReadable(int deepness) {
     std::stringstream ss;
 
     ss << std::string(deepness, '\t') << "List:" << std::endl;
@@ -29,7 +30,7 @@ std::string BencodeList::toReadable(int deepness) {
     return ss.str();
 };
 
-std::vector<char> BencodeList::toBencode() {
+std::vector<char> List::toBencode() {
     auto result = std::vector<char>{'l'};
 
     for (const auto &element : this->value) {

@@ -1,36 +1,37 @@
-#include "../include/BencodeDictionary.h"
-#include "../include/Utils.h"
+#include "../include/Dictionary.h"
 
-std::shared_ptr<BencodeElement> BencodeDictionary::parse(std::vector<char> const &data, int &pos) {
-    BencodeDictionaryMap elements;
-    std::shared_ptr<BencodeByteArray> key = nullptr;
+using namespace Bencode;
 
-    if (data[pos] != 'd') throw BadBencodeException();
+std::shared_ptr<Element> Dictionary::parse(std::vector<char> const &data, int &pos) {
+    DictionaryMap elements;
+    std::shared_ptr<ByteArray> key = nullptr;
 
-    Utils::incrementPosOrThrow(data, pos);
+    if (data[pos] != 'd') throw MarkupException();
+
+    incrementPosOrThrow(data, pos);
 
     while (data[pos] != 'e') {
         if (key == nullptr) {
-            auto suggestedKey = BencodeElement::parse(data, pos);
+            auto suggestedKey = Element::parse(data, pos);
 
-            key = std::dynamic_pointer_cast<BencodeByteArray>(suggestedKey);
+            key = std::dynamic_pointer_cast<ByteArray>(suggestedKey);
 
             if (key == nullptr) {
-                throw BadBencodeException();
+                throw MarkupException();
             }
         } else {
-            elements.insert(make_pair(key, BencodeElement::parse(data, pos)));
+            elements.insert(make_pair(key, Element::parse(data, pos)));
             key = nullptr;
         }
     }
 
     pos++;
 
-    return std::make_shared<BencodeDictionary>(elements);
+    return std::make_shared<Dictionary>(elements);
 };
 
 
-std::string BencodeDictionary::toReadable(int deepness) {
+std::string Dictionary::toReadable(int deepness) {
     std::stringstream ss;
 
     ss << std::string(deepness, '\t') << "Dictionary:" << std::endl;
@@ -44,7 +45,7 @@ std::string BencodeDictionary::toReadable(int deepness) {
     return ss.str();
 };
 
-std::vector<char> BencodeDictionary::toBencode() {
+std::vector<char> Dictionary::toBencode() {
     auto result = std::vector<char>{'d'};
 
     for (const auto &pair : this->value) {

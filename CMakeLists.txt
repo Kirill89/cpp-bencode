@@ -4,11 +4,11 @@ project(torrento)
 set(CMAKE_CXX_STANDARD 17)
 
 set(SOURCE_FILES
-        src/BencodeByteArray.cpp
-        src/BencodeDictionary.cpp
-        src/BencodeElement.cpp
-        src/BencodeList.cpp
-        src/BencodeNumber.cpp
+        src/ByteArray.cpp
+        src/Dictionary.cpp
+        src/Element.cpp
+        src/List.cpp
+        src/Number.cpp
         src/TorrentFile.cpp)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}") #  -pthread

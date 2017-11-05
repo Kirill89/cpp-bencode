@@ -1,7 +1,7 @@
 #include "../include/TorrentFile.h"
-#include "../include/BencodeDictionary.h"
+#include "../include/Dictionary.h"
 
-std::shared_ptr<BencodeElement> TorrentFile::readFile(std::ifstream &file) {
+std::shared_ptr<Element> TorrentFile::readFile(std::ifstream &file) {
     if (!file.is_open() || file.eof() || file.fail()) {
         return nullptr;
     }
@@ -17,11 +17,11 @@ std::shared_ptr<BencodeElement> TorrentFile::readFile(std::ifstream &file) {
 
     data.assign(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
 
-    return BencodeDictionary::parse(data, pos);
+    return Dictionary::parse(data, pos);
 }
 
 
-void TorrentFile::writeFile(std::ofstream &file, std::shared_ptr<BencodeElement> element) {
+void TorrentFile::writeFile(std::ofstream &file, std::shared_ptr<Element> element) {
     if (!file.is_open() || file.fail()) {
         return;
     }

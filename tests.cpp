@@ -1,124 +1,121 @@
 #include <cassert>
-#include "include/BencodeNumber.h"
-#include "include/BencodeByteArray.h"
-#include "include/BencodeList.h"
-#include "include/BencodeDictionary.h"
+#include "include/Number.h"
+#include "include/ByteArray.h"
+#include "include/List.h"
+#include "include/Dictionary.h"
 
-void bencodeNumberParseTest() {
+using namespace Bencode;
+
+void NumberParseTest() {
     auto pos = 0;
-    auto result = std::static_pointer_cast<BencodeNumber>(
-            BencodeNumber::parse(std::vector<char>{'i', '1', '2', '3', 'e'}, pos));
+    auto result = std::static_pointer_cast<Number>(Number::parse(getVectorChar("i123e"), pos));
 
     assert(result->getValue() == 123);
 }
 
-void bencodeNumberToBencodeTest() {
-    auto result = BencodeNumber(10).toBencode();
-    auto check = std::vector<char>{'i', '1', '0', 'e'};
+void NumberToBencodeTest() {
+    auto result = Number(10).toBencode();
+    auto check = getVectorChar("i10e");
 
     assert(result == check);
 }
 
-void bencodeByteArrayParseTest() {
+void ByteArrayParseTest() {
     auto pos = 0;
-    auto result = std::static_pointer_cast<BencodeByteArray>(
-            BencodeByteArray::parse(std::vector<char>{'2', ':', '2', '3'}, pos));
-    auto check = std::vector<char>{'2', '3'};
+    auto result = std::static_pointer_cast<ByteArray>(ByteArray::parse(getVectorChar("2:23"), pos));
+    auto check = getVectorChar("23");
 
     assert(result->getValue() == check);
 }
 
-void bencodeByteArrayToBencodeTest() {
-    auto result = BencodeByteArray(std::vector<char>{'a', 'b', 'c'}).toBencode();
-    auto check = std::vector<char>{'3', ':', 'a', 'b', 'c'};
+void ByteArrayToBencodeTest() {
+    auto result = ByteArray(getVectorChar("abc")).toBencode();
+    auto check = getVectorChar("3:abc");
 
     assert(result == check);
 }
 
-void bencodeListParseTest() {
+void ListParseTest() {
     auto pos = 0;
-    auto result = std::static_pointer_cast<BencodeList>(
-            BencodeList::parse(std::vector<char>{'l', '1', ':', 'x', 'e'}, pos));
-    auto check = std::vector<char>{'x'};
+    auto result = std::static_pointer_cast<List>(List::parse(getVectorChar("l1:xe"), pos));
+    auto check = getVectorChar("x");
 
     assert(result->getValue().size() == 1);
 
-    auto array = std::static_pointer_cast<BencodeByteArray>(result->getValue()[0]);
+    auto array = std::static_pointer_cast<ByteArray>(result->getValue()[0]);
 
     assert(array->getValue() == check);
 }
 
-void bencodeListToBencodeTest() {
-    auto result = BencodeList(std::vector<std::shared_ptr<BencodeElement>>{
-            std::make_shared<BencodeNumber>(7),
-            std::make_shared<BencodeByteArray>(std::vector<char>{'x', 'y', 'q'})
+void ListToBencodeTest() {
+    auto result = List(std::vector<std::shared_ptr<Element>>{
+            std::make_shared<Number>(7),
+            std::make_shared<ByteArray>(getVectorChar("xyq"))
     }).toBencode();
-    auto check = std::vector<char>{'l', 'i', '7', 'e', '3', ':', 'x', 'y', 'q', 'e'};
+    auto check = getVectorChar("li7e3:xyqe");
 
     assert(result == check);
 }
 
-void bencodeDictionaryParseTest() {
+void DictionaryParseTest() {
     auto pos = 0;
-    auto result = std::static_pointer_cast<BencodeDictionary>(
-            BencodeDictionary::parse(std::vector<char>{'d', '1', ':', 'x', '1', ':', 'x', 'e'}, pos));
-    auto check = std::vector<char>{'x'};
+    auto result = std::static_pointer_cast<Dictionary>(Dictionary::parse(getVectorChar("d1:x1:xe"), pos));
+    auto check = getVectorChar("x");
 
     assert(result->getValue().size() == 1);
 
-    auto key = std::static_pointer_cast<BencodeByteArray>(result->getValue().begin()->first);
-    auto val = std::static_pointer_cast<BencodeByteArray>(result->getValue().begin()->second);
+    auto key = std::static_pointer_cast<ByteArray>(result->getValue().begin()->first);
+    auto val = std::static_pointer_cast<ByteArray>(result->getValue().begin()->second);
 
     assert(key->getValue() == check);
     assert(val->getValue() == check);
 }
 
-void bencodeDictionaryToBencodeTest() {
-    auto list = std::make_shared<BencodeList>(std::vector<std::shared_ptr<BencodeElement>>{
-            std::make_shared<BencodeNumber>(1),
-            std::make_shared<BencodeByteArray>(std::vector<char>{'b'})
+void DictionaryToBencodeTest() {
+    auto list = std::make_shared<List>(std::vector<std::shared_ptr<Element>>{
+            std::make_shared<Number>(1),
+            std::make_shared<ByteArray>(getVectorChar("b"))
     });
 
-    auto result = BencodeDictionary(BencodeDictionaryMap{
+    auto result = Dictionary(DictionaryMap{
             {
-                    std::make_shared<BencodeByteArray>(std::vector<char>{'q'}),
+                    std::make_shared<ByteArray>(getVectorChar("q")),
                     list
             }
     }).toBencode();
-    auto check = std::vector<char>{'d', '1', ':', 'q', 'l', 'i', '1', 'e', '1', ':', 'b', 'e', 'e'};
+    auto check = getVectorChar("d1:qli1e1:bee");
 
     assert(result == check);
 }
 
 void bencodeElementParseTest() {
     auto pos = 0;
-    auto result = std::static_pointer_cast<BencodeList>(
-            BencodeElement::parse(std::vector<char>{'l', 'l', '1', ':', 't', 'e', 'e'}, pos));
-    auto check = std::vector<char>{'t'};
+    auto result = std::static_pointer_cast<List>(Element::parse(getVectorChar("ll1:tee"), pos));
+    auto check = getVectorChar("t");
 
     assert(result->getValue().size() == 1);
 
-    auto list = std::static_pointer_cast<BencodeList>(result->getValue()[0]);
+    auto list = std::static_pointer_cast<List>(result->getValue()[0]);
 
     assert(list->getValue().size() == 1);
 
-    auto array = std::static_pointer_cast<BencodeByteArray>(list->getValue()[0]);
+    auto array = std::static_pointer_cast<ByteArray>(list->getValue()[0]);
 
     assert(array->getValue() == check);
 }
 
 int main() {
     // toBencode()
-    bencodeNumberToBencodeTest();
-    bencodeByteArrayToBencodeTest();
-    bencodeListToBencodeTest();
-    bencodeDictionaryToBencodeTest();
+    NumberToBencodeTest();
+    ByteArrayToBencodeTest();
+    ListToBencodeTest();
+    DictionaryToBencodeTest();
 
     // parse()
-    bencodeNumberParseTest();
-    bencodeByteArrayParseTest();
-    bencodeListParseTest();
-    bencodeDictionaryParseTest();
+    NumberParseTest();
+    ByteArrayParseTest();
+    ListParseTest();
+    DictionaryParseTest();
     bencodeElementParseTest();
 
     return 0;

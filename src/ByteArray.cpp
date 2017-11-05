@@ -1,31 +1,32 @@
-#include "../include/BencodeByteArray.h"
-#include "../include/Utils.h"
+#include "../include/ByteArray.h"
 
-std::shared_ptr<BencodeElement> BencodeByteArray::parse(std::vector<char> const &data, int &pos) {
+using namespace Bencode;
+
+std::shared_ptr<Element> ByteArray::parse(std::vector<char> const &data, int &pos) {
     std::string lengthStr;
 
     while (data[pos] != ':') {
         lengthStr += data[pos];
-        Utils::incrementPosOrThrow(data, pos);
+        incrementPosOrThrow(data, pos);
     }
 
-    Utils::incrementPosOrThrow(data, pos);
+    incrementPosOrThrow(data, pos);
 
     long length = stol(lengthStr);
 
     std::vector<char> result;
 
-    if (pos + length > data.size()) throw BadBencodeException();
+    if (pos + length > data.size()) throw MarkupException();
 
     while (length--) {
         result.push_back(data[pos]);
         pos++;
     }
 
-    return std::make_shared<BencodeByteArray>(result);
+    return std::make_shared<ByteArray>(result);
 }
 
-std::string BencodeByteArray::toReadable(int deepness) {
+std::string ByteArray::toReadable(int deepness) {
     std::stringstream ss;
 
     ss << std::string(deepness, '\t') << "ByteArray: ";
@@ -43,7 +44,7 @@ std::string BencodeByteArray::toReadable(int deepness) {
     return ss.str();
 };
 
-std::vector<char> BencodeByteArray::toBencode() {
+std::vector<char> ByteArray::toBencode() {
     auto result = std::vector<char>(this->value);
     auto length = std::to_string(result.size());
 

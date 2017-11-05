@@ -2,8 +2,9 @@
 #include <fstream>
 #include <memory>
 #include "include/TorrentFile.h"
-#include "include/BencodeDictionary.h"
-#include "include/Utils.h"
+#include "include/Dictionary.h"
+
+using namespace Bencode;
 
 int main() {
     std::ifstream file("ubuntu-17.04-desktop-amd64.iso.torrent");
@@ -12,17 +13,17 @@ int main() {
 
     file.close();
 
-    auto data = std::dynamic_pointer_cast<BencodeDictionary>(result);
-    auto search = Utils::getVectorChar("announce");
+    auto data = std::dynamic_pointer_cast<Dictionary>(result);
+    auto search = getVectorChar("announce");
 
     if (data != nullptr) {
         for (const auto &element : data->getValue()) {
-            auto key = std::static_pointer_cast<BencodeByteArray>(element.first);
+            auto key = std::static_pointer_cast<ByteArray>(element.first);
 
             if (key->getValue() == search) {
-                auto value = std::static_pointer_cast<BencodeByteArray>(element.second);
+                auto value = std::static_pointer_cast<ByteArray>(element.second);
 
-                value->setValue(Utils::getVectorChar("http://test.test"));
+                value->setValue(getVectorChar("http://test.test"));
             }
         }
     }
