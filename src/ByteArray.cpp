@@ -26,7 +26,7 @@ std::shared_ptr<Element> ByteArray::parse(std::vector<char> const &data, int &po
     return std::make_shared<ByteArray>(result);
 }
 
-std::string ByteArray::toReadable(int deepness) {
+std::string ByteArray::toReadable(int deepness) const {
     std::stringstream ss;
 
     ss << std::string(deepness, '\t') << "ByteArray: ";
@@ -44,7 +44,7 @@ std::string ByteArray::toReadable(int deepness) {
     return ss.str();
 };
 
-std::vector<char> ByteArray::toBencode() {
+std::vector<char> ByteArray::toBencode() const {
     auto result = std::vector<char>(this->value);
     auto length = std::to_string(result.size());
 

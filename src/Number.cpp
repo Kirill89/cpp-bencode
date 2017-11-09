@@ -20,13 +20,13 @@ std::shared_ptr<Element> Number::parse(std::vector<char> const &data, int &pos) 
 }
 
 
-std::string Number::toReadable(int deepness) {
+std::string Number::toReadable(int deepness) const {
     std::stringstream ss;
     ss << std::string(deepness, '\t') << "Number: " << this->value << std::endl;
     return ss.str();
 };
 
-std::vector<char> Number::toBencode() {
+std::vector<char> Number::toBencode() const {
     auto result = std::to_string(this->value);
 
     result = 'i' + result + 'e';

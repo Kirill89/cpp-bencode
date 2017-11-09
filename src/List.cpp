@@ -18,7 +18,7 @@ std::shared_ptr<Element> List::parse(std::vector<char> const &data, int &pos) {
     return std::make_shared<List>(elements);
 };
 
-std::string List::toReadable(int deepness) {
+std::string List::toReadable(int deepness) const {
     std::stringstream ss;
 
     ss << std::string(deepness, '\t') << "List:" << std::endl;
@@ -30,7 +30,7 @@ std::string List::toReadable(int deepness) {
     return ss.str();
 };
 
-std::vector<char> List::toBencode() {
+std::vector<char> List::toBencode() const {
     auto result = std::vector<char>{'l'};
 
     for (const auto &element : this->value) {

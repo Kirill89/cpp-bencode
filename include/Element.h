@@ -18,9 +18,9 @@ namespace Bencode {
 
     class Element {
     public:
-        virtual std::string toReadable(int deepness = 0) = 0;
+        virtual std::string toReadable(int deepness = 0) const = 0;
 
-        virtual std::vector<char> toBencode() = 0;
+        virtual std::vector<char> toBencode() const = 0;
 
         static std::shared_ptr<Element> parse(std::vector<char> const &data, int &pos);
     };

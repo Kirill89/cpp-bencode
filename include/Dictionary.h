@@ -29,9 +29,9 @@ namespace Bencode {
 
         void setValue(DictionaryMap &value) { this->value = DictionaryMap(value); }
 
-        std::vector<char> toBencode();
+        std::vector<char> toBencode() const;
 
-        std::string toReadable(int deepness);
+        std::string toReadable(int deepness) const;
 
         static std::shared_ptr<Element> parse(std::vector<char> const &data, int &pos);
     };

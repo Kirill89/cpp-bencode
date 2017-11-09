@@ -31,7 +31,7 @@ std::shared_ptr<Element> Dictionary::parse(std::vector<char> const &data, int &p
 };
 
 
-std::string Dictionary::toReadable(int deepness) {
+std::string Dictionary::toReadable(int deepness) const {
     std::stringstream ss;
 
     ss << std::string(deepness, '\t') << "Dictionary:" << std::endl;
@@ -45,7 +45,7 @@ std::string Dictionary::toReadable(int deepness) {
     return ss.str();
 };
 
-std::vector<char> Dictionary::toBencode() {
+std::vector<char> Dictionary::toBencode() const {
     auto result = std::vector<char>{'d'};
 
     for (const auto &pair : this->value) {
